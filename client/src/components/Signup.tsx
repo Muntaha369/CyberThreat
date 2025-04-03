@@ -11,18 +11,18 @@ const Signup = () => {
   const [verifyEmail, setVerifyEmail] = useState('')
   const [invalid, setInvalid] = useState(false)
   const [newUser, setNewUser] = useState({
-    first_name: '',
-    second_name: '',
-    Email: '',
-    Password: '',
+    "first_name": '',
+    "second_name": '',
+    "email": '',  
+    "password": ''
   })
 
   const navigate=useNavigate()
 
   const FetchD = async () => {
     try {
-      const res = await axios.get('http://localhost:8080/api/auth/user')
-      console.log(res.data)
+      const res = await axios.get('http://localhost:3001/users')
+      console.log(res)
     } catch (error) {
       console.log(error)
     }
@@ -30,11 +30,15 @@ const Signup = () => {
 
   const PostD = async () => {
     try {
-      const res = await axios.post('http://localhost:3001/users', newUser)
-      console.log('POSTED')
-      FetchD()
+      const res = await axios.post('http://localhost:8080/api/auth/register', newUser, {
+        headers: {
+            "Content-Type": "application/json",
+        },
+    });
+    console.log("User Added:", res.data);
     } catch (error) {
       console.log(error)
+      console.log(newUser)
     }
   }
 
@@ -66,8 +70,8 @@ const Signup = () => {
   const PassThrough = async () => {
     try {
       const res = await axios.get('http://localhost:3001/users');
-      const foundUser = res.data.find((val: any) => val.Email === verifyEmail);
-      const foundPass = res.data.find((val: any) => val.Password === verifyPass);
+      const foundUser = res.data.find((val: any) => val.email === verifyEmail);
+      const foundPass = res.data.find((val: any) => val.password === verifyPass);
   
       if (foundUser&&foundPass) {
         console.log("Email found:", foundUser);
@@ -128,8 +132,8 @@ const Signup = () => {
               <h1 className='font-semibold'>Email</h1>
             </div>
             <input
-              value={newUser.Email}
-              name='Email'
+              value={newUser.email}
+              name='email'
               placeholder='amogus@gmail.com'
               type='email'
               className=' placeholder-sky-200 outline-none p-2 border-[1px] border-white bg-transparent rounded h-[6vh] w-[42vw] m-1'
@@ -140,8 +144,8 @@ const Signup = () => {
               <h1 className='font-semibold'>Password</h1>
             </div>
             <input
-              value={newUser.Password}
-              name='Password'
+              value={newUser.password}
+              name='password'
               placeholder='78J$xxxy2'
               type='password'
               className=' placeholder-sky-200 outline-none p-2 border-[1px] border-white bg-transparent rounded h-[6vh] w-[42vw] m-1'
