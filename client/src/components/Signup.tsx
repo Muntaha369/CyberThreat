@@ -10,6 +10,10 @@ const Signup = () => {
   const [verifyPass, setVerifyPass] = useState('')
   const [verifyEmail, setVerifyEmail] = useState('')
   const [invalid, setInvalid] = useState(false)
+  const [loginUser, setLoginUser] = useState({
+    "email": '',  
+    "password": ''
+  })
   const [newUser, setNewUser] = useState({
     "first_name": '',
     "second_name": '',
@@ -19,14 +23,6 @@ const Signup = () => {
 
   const navigate=useNavigate()
 
-  const FetchD = async () => {
-    try {
-      const res = await axios.get('http://localhost:3001/users')
-      console.log(res)
-    } catch (error) {
-      console.log(error)
-    }
-  }
 
   const PostD = async () => {
     try {
@@ -38,18 +34,39 @@ const Signup = () => {
     console.log("User Added:", res.data);
     } catch (error) {
       console.log(error)
-      console.log(newUser)
     }
   }
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setNewUser((prevD) => ({ ...prevD, [e.target.name]: e.target.value }))
   }
+
+  const handleSubmitl = async () => {
+    setLoginUser(prevUser => ({
+      ...prevUser, // Ensures no loss of other state fields
+      email: verifyEmail,  
+      password: verifyPass
+    }));
+  
+    try {
+      // Wait for the state to update using useEffect OR use a local variable
+      const userData = { email: verifyEmail, password: verifyPass };  // Use directly
+  
+      const res = await axios.post("http://localhost:8080/api/auth/login", userData, {
+        headers: {
+          "Content-Type": "application/json"
+        },
+      });
+  
+      console.log("Done: ", res.status);
+      console.log("Done: ", res.data.token);
+    } catch (error) {
+      console.error("The error is", error);
+    }
+  };
   
   
-  useEffect(() => {
-    FetchD()
-  }, [])
+  
 
   const SignTrueLogFalse = () => {
     setSignUp(true)
@@ -67,22 +84,22 @@ const Signup = () => {
       setLogin(true)
   }
 
-  const PassThrough = async () => {
-    try {
-      const res = await axios.get('http://localhost:3001/users');
-      const foundUser = res.data.find((val: any) => val.email === verifyEmail);
-      const foundPass = res.data.find((val: any) => val.password === verifyPass);
+  // const PassThrough = async () => {
+  //   try {
+  //     const res = await axios.get('http://localhost:3001/users');
+  //     const foundUser = res.data.find((val: any) => val.email === verifyEmail);
+  //     const foundPass = res.data.find((val: any) => val.password === verifyPass);
   
-      if (foundUser&&foundPass) {
-        console.log("Email found:", foundUser);
-        navigate('/home');
-      } else {
-        setInvalid(true)
-      }
-    } catch (error) {
-      console.error("Error fetching users:", error);
-    }
-  };
+  //     if (foundUser&&foundPass) {
+  //       console.log("Email found:", foundUser);
+  //       navigate('/home');
+  //     } else {
+  //       setInvalid(true)
+  //     }
+  //   } catch (error) {
+  //     console.error("Error fetching users:", error);
+  //   }
+  // };
   
 
   return (
@@ -190,7 +207,7 @@ const Signup = () => {
       <AnimatePresence>
         {login && (
           <motion.form
-          onSubmit={(e) => { e.preventDefault();}}
+          onSubmit={(e) => { e.preventDefault();handleSubmitl()}}
             className='h-[72vh] w-[70vw] bg-black bg-opacity-50 rounded-3xl absolute flex items-center flex-col justify-center z-10'
             initial={{ x: '-100vw' }}
             animate={{ x: 0 }}
@@ -232,7 +249,7 @@ const Signup = () => {
               whileTap={{ scale: 0.9 }}
               animate={{ opacity: 1, scale: 1 }}
               transition={{ duration: 0.2 }}
-              onClick={PassThrough}
+              // onClick={PassThrough}
             >
               Log in
             </motion.button>
