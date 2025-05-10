@@ -20,5 +20,5 @@
     RUN mvn clean
     
     # Run the Spring Boot application directly using Maven
-    CMD ["mvn", "spring-boot:run"]
+    CMD ["mvn", "spring-boot:run", "mvn clean install"]
     
